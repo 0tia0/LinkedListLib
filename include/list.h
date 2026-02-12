@@ -16,13 +16,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-// Nodo della lista che contiene un dato generico (void*) e un puntatore al nodo successivo
+// List node containing a generic payload (void*) and a pointer to the next node.
 typedef struct s_node {
     void* data;
     struct s_node* next;
 } Node;
 
-// Struttura della lista che contiene il puntatore alla testa, alla coda e la dimensione della lista
+// List structure holding head and tail pointers plus the list size.
 typedef struct {
     Node* head;
     Node* tail;
@@ -30,37 +30,38 @@ typedef struct {
 } List;
 
 //
-// GENERIC FUNCTIONS (list-utils.c)
+// UTILITY FUNCTIONS (list-utils.c)
 //
 
 /**
- * @brief Inizializza la lista 
- * 
- * @return List* indirizzo lista appena inizializzata
+ * @brief Initialize an empty list.
+ *
+ * @return Pointer to the newly allocated list, or NULL on allocation failure.
  */
 List* create_list();
 
 /**
- * @brief Distrugge la lista e libera la memoria occupata da essa
- * 
- * @param list lista da distruggere
+ * @brief Destroy a list and free its nodes.
+ *
+ * @param list List to destroy. Safe to pass NULL.
+ *
+ * @note The node payloads are not freed.
  */
 void destroy_list(List* list);
 
 /**
- * @brief Restituisce la dimensione della lista
- * 
- * @param list lista di cui ottenere la dimensione
- * @return int dimensione della lista
+ * @brief Return the list size.
+ *
+ * @param list List to query.
+ * @return Number of elements, or -1 if list is NULL.
  */
 int get_size(List* list);
 
 /**
- * @brief Restituisce true se la lista è vuota, false altrimenti
- * 
- * @param list lista da controllare
- * @return true se la lista è vuota
- * @return false se la lista non è vuota
+ * @brief Check whether the list is empty.
+ *
+ * @param list List to check.
+ * @return true if the list is empty, false otherwise.
  */
 bool is_empty(List* list);
 
@@ -69,29 +70,35 @@ bool is_empty(List* list);
 //
 
 /**
- * @brief Aggiunge un elemento alla fine della lista
- * 
- * @param list lista a cui aggiungere l'elemento
- * @param data elemento da aggiungere
+ * @brief Append an element to the end of the list.
+ *
+ * @param list Target list.
+ * @param data Element payload to store.
+ *
+ * @note No-op if list or data is NULL.
  */
 void push_back(List* list, void* data);
 
 /**
- * @brief Aggiunge un elemento all'inizio della lista
- * 
- * @param list lista a cui aggiungere l'elemento
- * @param data elemento da aggiungere
+ * @brief Prepend an element to the beginning of the list.
+ *
+ * @param list Target list.
+ * @param data Element payload to store.
+ *
+ * @note No-op if list or data is NULL.
  */
 void push_front(List* list, void* data);
 
 /**
- * @brief Aggiunge un elemento in una posizione specifica della lista. 
- *        L'elemento viene aggiunto in posizione "index", partendo da 0 e ciò che ci si trovava in quella posizione viene spostato in avanti di una posizione insieme al resto della lista.
- *        Se l'indice è maggiore o uguale alla dimensione della lista, l'elemento viene aggiunto alla fine. Se l'indice è minore o uguale a 0, l'elemento viene aggiunto all'inizio.
- * 
- * @param list lista a cui aggiungere l'elemento
- * @param data elemento da aggiungere
- * @param index posizione in cui aggiungere l'elemento (partendo da 0)
+ * @brief Insert an element at a specific position.
+ *        The element is inserted at index (0-based) and the following elements are shifted forward.
+ *        If index >= size, the element is appended. If index <= 0, the element is prepended.
+ *
+ * @param list Target list.
+ * @param data Element payload to store.
+ * @param index Insert position (0-based).
+ *
+ * @note No-op if list or data is NULL.
  */
 void push_at(List* list, void* data, int index);
 
@@ -100,29 +107,29 @@ void push_at(List* list, void* data, int index);
 //
 
 /**
- * @brief Rimuove un elemento dalla fine della lista
- * 
- * @param list lista a cui rimuove l'elemento
- * @return Node elemento rimosso dalla lista se dovesse servire all'utenete
+ * @brief Remove the last element from the list.
+ *
+ * @param list Target list.
+ * @return Copy of the removed node, or a zeroed Node if the list is NULL or empty.
  */
 Node pop_back(List* list);
 
 /**
- * @brief Rimuove un elemento all'inizio della lista
- * 
- * @param list lista a cui rimuove l'elemento
- * @return Node elemento rimosso dalla lista se dovesse servire all'utenete
+ * @brief Remove the first element from the list.
+ *
+ * @param list Target list.
+ * @return Copy of the removed node, or a zeroed Node if the list is NULL or empty.
  */
 Node pop_front(List* list);
 
 /**
- * @brief Rimuove un elemento in una posizione specifica della lista.
- *        L'elemento viene rimosso in posizione "index", partendo da 0 e ciò che ci si trovava in quella posizione viene spostato indietro di una posizione insieme al resto della lista.
- *        Se l'indice è maggiore o uguale alla dimensione della lista, l'elemento viene rimosso dalla fine. Se l'indice è minore o uguale a 0, l'elemento viene rimosso dall'inizio.
- * 
- * @param list lista a cui rimuove l'elemento
- * @param index posizione in cui rimuovere l'elemento (partendo da 0)
- * @return Node elemento rimosso dalla lista se dovesse servire all'utenete
+ * @brief Remove the element at a specific position.
+ *        The element is removed at index (0-based) and the following elements are shifted backward.
+ *        If index >= size, the last element is removed. If index <= 0, the first element is removed.
+ *
+ * @param list Target list.
+ * @param index Removal position (0-based).
+ * @return Copy of the removed node, or a zeroed Node if the list is NULL or empty.
  */
 Node pop_at(List* list, int index);
 
@@ -131,28 +138,28 @@ Node pop_at(List* list, int index);
 //
 
 /**
- * @brief Restituisce il nodo in una posizione specifica della lista.
- *        Se l'indice è maggiore o uguale alla dimensione della lista, viene restituito l'ultimo nodo. Se l'indice è minore o uguale a 0, viene restituito il primo nodo.
- * 
- * @param list lista da cui ottenere il nodo
- * @param index posizione del nodo da ottenere (partendo da 0)
- * @return Node* nodo nella posizione specificata o NULL se non esiste
+ * @brief Return the node at a specific index.
+ *        If index >= size, the last node is returned. If index <= 0, the first node is returned.
+ *
+ * @param list Source list.
+ * @param index Node position (0-based).
+ * @return Node* Pointer to the node at the requested position, or NULL if not found.
  */
 Node* get_at(List *list, int index);
 
 /**
- * @brief Resituisce il primo nodo della lista.
- * 
- * @param list lista da cui ottenere il primo nodo
- * @return Node* nodo in testa alla lista o NULL se la lista è vuota
+ * @brief Return the first node of the list.
+ *
+ * @param list Source list.
+ * @return Node* Pointer to the head node, or NULL if the list is empty.
  */
 Node* get_first(List *list);
 
 /**
- * @brief Resituisce l'ultimo nodo della lista.
- * 
- * @param list lista da cui ottenere l'ultimo nodo
- * @return Node* nodo in coda alla lista o NULL se la lista è vuota
+ * @brief Return the last node of the list.
+ *
+ * @param list Source list.
+ * @return Node* Pointer to the tail node, or NULL if the list is empty.
  */
 Node* get_last(List *list);
 
@@ -161,20 +168,20 @@ Node* get_last(List *list);
 //
 
 /**
- * @brief Esegue una funzione passata a parametro su ogni elemento della lista, partendo dal primo fino all'ultimo.
- * 
- * @param list lista su cui eseguire la funzione
- * @param func funzione da eseguire su ogni elemento della lista
+ * @brief Apply a callback to each element from first to last.
+ *
+ * @param list Target list.
+ * @param func Callback invoked with each node's data.
  */
 void list_foreach(List* list, void (*func)(void*));
 
-/** 
- * TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO TODO 
- * 
- * @brief Esegue una funzione passata a parametro su ogni elemento della lista, partendo dall'ultimo fino al primo.
- * 
- * @param list lista su cui eseguire la funzione
- * @param func funzione da eseguire su ogni elemento della lista
+/**
+ * @brief Apply a callback to each element from last to first.
+ *
+ * @param list Target list.
+ * @param func Callback invoked with each node's data.
+ *
+ * @note TODO: not implemented yet.
  */
 void list_foreach_reversed(List* list, void (*func)(void*));
 
